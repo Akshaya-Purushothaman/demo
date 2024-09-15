@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Community Mapping</title>
+    <style>
+        /* Embedded CSS */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px;
+            color: #333;
+        }
+
+        #map {
+            height: 80vh;
+            width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-box {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Advanced Community Mapping</h1>
+        <div class="info-box" id="infoBox">
+            <strong>Information</strong>
+            <p>Select a marker to see details.</p>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <!-- Leaflet.js and plugins -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize the map
+            const map = L.map('map').setView([51.505, -0.09], 13);
+
+            // Add tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Add custom marker data
+            const markers = [
+                { position: [51.505, -0.09], title: 'Marker 1', description: 'This is Marker 1' },
+                { position: [51.515, -0.1], title: 'Marker 2', description: 'This is Marker 2' }
+            ];
+
+            // Add markers to the map
+            markers.forEach(marker => {
+                L.marker(marker.position)
+                    .addTo(map)
+                    .bindPopup(`<strong>${marker.title}</strong><br>${marker.description}`)
+                    .on('click', () => {
+                        document.getElementById('infoBox').innerHTML = `
+                            <strong>${marker.title}</strong>
+                            <p>${marker.description}</p>
+                        `;
+                    });
+            });
+
+            // Add geocoder control
+            L.Control.geocoder().addTo(map);
+
+            // Add routing control
+            L.Routing.control({
+                waypoints: [
+                    L.latLng(51.505, -0.09),
+                    L.latLng(51.515, -0.1)
+                ],
+                routeWhileDragging: true
+            }).addTo(map);
+        });
+    </script>
+</body>
+</html>
